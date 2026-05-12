@@ -1,6 +1,7 @@
 class Api::V1::ZonesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_event
+  before_action :check_organizer, only: [ :create ]
 
   def index
     @zones = @event.zones
@@ -11,16 +12,12 @@ class Api::V1::ZonesController < ApplicationController
     render json: @zone
   end
   def create
-   if @event.user_id = current_user.id
-      @zone = @event.zones.new(zone_params)
-      if @zone.save
-        render json: @zone, status: :created
-      else
-        render json: @zone.errors, status: :unprocessable_entity
-      end
-   else
-      render json: { "error": "permission denied" }, status: :forbidden
-   end
+    @zone = @event.zones.new(zone_params)
+    if @zone.save
+      render json: @zone, status: :created
+    else
+      render json: @zone.errors, status: :unprocessable_entity
+    end
   end
 
   private
@@ -31,5 +28,9 @@ class Api::V1::ZonesController < ApplicationController
 
   def set_event
     @event = Event.find(params[:event_id])
+  end
+
+  def check_organizer
+    render json: { "error": "permission denied" }, status: :forbidden unless @event.user_id == current_user.id
   end
 end
