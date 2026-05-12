@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
-      post "auth/login", to: "sessions#create"
+      scope "/auth" do
+        post "/login", to: "sessions#create"
+        post "/register", to: "users#create"
+      end
       resources :events do
         resources :zones, only: [ :index, :show, :create ] do
           resources :tickets, only: [ :create ]
