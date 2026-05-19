@@ -13,11 +13,8 @@ class Api::V1::ZonesController < ApplicationController
   end
   def create
     @zone = @event.zones.new(zone_params)
-    if @zone.save
-      render json: @zone, status: :created
-    else
-      render json: @zone.errors, status: :unprocessable_entity
-    end
+    @zone.save!
+    render json: @zone, status: :created
   end
 
   private

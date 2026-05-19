@@ -1,4 +1,10 @@
+require "sidekiq/web"
+
 Rails.application.routes.draw do
+  Sidekiq::Web.use ActionDispatch::Session::CookieStore, key: "_sidekiq_session"
+
+
+  mount Sidekiq::Web => "/sidekiq"
   namespace :api do
     namespace :v1 do
       scope "/auth" do

@@ -11,18 +11,12 @@ class Api::V1::TicketsController < ApplicationController
   def create
     @ticket = @zone.tickets.new
     @ticket.user_id = current_user.id
-    if @ticket.save
-      render json: @ticket, status: :created
-    else
-      render json: @ticket.errors, status: :unprocessable_entity
-    end
+    @ticket.save!
+    render json: @ticket, status: :created
   end
   def update
-    if @ticket.update(ticket_params)
-      render json: @ticket
-    else
-      render json: @ticket.errors, status: :unprocessable_entity
-    end
+    @ticket.update!(ticket_params)
+    render json: @ticket
   end
 
   private

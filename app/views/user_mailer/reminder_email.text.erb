@@ -1,0 +1,9 @@
+Event: <%= @event.title %> is coming!
+
+Hi, <%= @user.first_name %> tomorrow will be <%= @event.title %>
+
+- Description: <%= @event.description %>
+- Starts at: <%= @event.starts_at.strftime("%B %d, %Y at %H:%M") %> 
+- Location: <%= @event.location %>
+- Duration: <%= @event.duration_minutes %> minutes.
+

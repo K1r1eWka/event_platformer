@@ -18,21 +18,16 @@ class Api::V1::EventsController < ApplicationController
   def create
     @event = Event.new(event_params)
     @event.organizer = current_user
-    if @event.save
-      event = EventSerializer.new(@event)
-      render json: event.as_json, status: :created
-    else
-      render json: @event.errors, status: :unprocessable_entity
-    end
+    @event.save!
+    EventReminderJob.set(wait_until: @event.starts_at - 1.day).perform_later(@event.id)
+    event = EventSerializer.new(@event)
+    render json: event.as_json, status: :created
   end
 
   def update
-    if @event.update(event_params)
-      event = EventSerializer.new(@event)
-      render json: event.as_json
-    else
-      render json: @event.errors, status: :unprocessable_entity
-    end
+    @event.update!(event_params)
+    event = EventSerializer.new(@event)
+    render json: event.as_json
   end
 
   def destroy
@@ -51,8 +46,6 @@ class Api::V1::EventsController < ApplicationController
   end
 
   def check_organizer
-    if current_user.id != @event.user_id
-      render json: { "error": "permission denied" }, status: :forbidden
-    end
+    render json: { "error": "permission denied" }, status: :forbidden unless current_user.id == @event.user_id
   end
 end
