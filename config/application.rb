@@ -18,6 +18,11 @@ module EventPlatform
 
     config.active_job.queue_adapter = :sidekiq
 
+    config.logger = ActiveSupport::Logger.new($stdout)
+    config.logger.formatter = proc do |severity, time, progname, message|
+      { level: severity, time: time, message: message }.to_json + "\n"
+    end
+
 
     # Configuration for the application, engines, and railties goes here.
     #

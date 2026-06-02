@@ -11,7 +11,9 @@ class Api::V1::TicketsController < ApplicationController
   def create
     @ticket = @zone.tickets.new
     @ticket.user_id = current_user.id
+    @ticket.paid_price = @zone.dynamic_price
     @ticket.save!
+    ActionCable.server.broadcast("event_#{@event.id}", { tickets_left: @zone.tickets_left, current_price: @ticket.paid_price })
     render json: @ticket, status: :created
   end
   def update
